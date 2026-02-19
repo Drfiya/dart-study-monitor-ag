@@ -1,14 +1,12 @@
-import { ThemeProvider, CssBaseline } from '@mui/material';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import theme from './theme';
+import { AppThemeProvider } from './ThemeContext';
 import Landing from './pages/Landing';
 import StudyDashboard from './pages/StudyDashboard';
 import CrossStudy from './pages/CrossStudy';
 
 export default function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <AppThemeProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
@@ -16,6 +14,6 @@ export default function App() {
           <Route path="/cross-study" element={<CrossStudy />} />
         </Routes>
       </BrowserRouter>
-    </ThemeProvider>
+    </AppThemeProvider>
   );
 }

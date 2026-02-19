@@ -1,90 +1,79 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme, type PaletteMode } from '@mui/material/styles';
 
 /**
- * DART Study Monitor dark theme.
- * Deep navy base with toxicology-appropriate signal colors.
+ * Creates a MUI theme configured for the given mode.
+ * Both modes share typography, shape, and component overrides.
+ * Palette colors adapt to light / dark.
  */
-const theme = createTheme({
-    palette: {
-        mode: 'dark',
-        primary: {
-            main: '#60a5fa',    // calm blue
-            light: '#93c5fd',
-            dark: '#2563eb',
-        },
-        secondary: {
-            main: '#a78bfa',    // soft violet
-            light: '#c4b5fd',
-            dark: '#7c3aed',
-        },
-        background: {
-            default: '#0b1120',  // deep navy
-            paper: '#111827',
-        },
-        error: {
-            main: '#ef4444',
-        },
-        warning: {
-            main: '#f59e0b',
-        },
-        success: {
-            main: '#10b981',
-        },
-        text: {
-            primary: '#f1f5f9',
-            secondary: '#94a3b8',
-        },
-        divider: 'rgba(148, 163, 184, 0.12)',
-    },
-    typography: {
-        fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-        h4: { fontWeight: 700, letterSpacing: '-0.02em' },
-        h5: { fontWeight: 600 },
-        h6: { fontWeight: 600 },
-        subtitle1: { fontWeight: 500 },
-        body2: { color: '#94a3b8' },
-    },
-    shape: {
-        borderRadius: 12,
-    },
-    components: {
-        MuiCard: {
-            styleOverrides: {
-                root: {
-                    backgroundImage: 'none',
-                    border: '1px solid rgba(148, 163, 184, 0.08)',
-                },
-            },
-        },
-        MuiPaper: {
-            styleOverrides: {
-                root: {
-                    backgroundImage: 'none',
-                },
-            },
-        },
-        MuiTab: {
-            styleOverrides: {
-                root: {
-                    textTransform: 'none',
-                    fontWeight: 500,
-                    fontSize: '0.875rem',
-                },
-            },
-        },
-        MuiChip: {
-            styleOverrides: {
-                root: {
-                    fontWeight: 600,
-                },
-            },
-        },
-    },
-});
+export function createAppTheme(mode: PaletteMode) {
+    const isDark = mode === 'dark';
 
-export default theme;
+    return createTheme({
+        palette: {
+            mode,
+            primary: {
+                main: isDark ? '#60a5fa' : '#2563eb',
+                light: isDark ? '#93c5fd' : '#60a5fa',
+                dark: '#1d4ed8',
+            },
+            secondary: {
+                main: isDark ? '#a78bfa' : '#7c3aed',
+                light: isDark ? '#c4b5fd' : '#a78bfa',
+                dark: '#5b21b6',
+            },
+            background: {
+                default: isDark ? '#0b1120' : '#f1f5f9',
+                paper: isDark ? '#111827' : '#ffffff',
+            },
+            error: { main: '#ef4444' },
+            warning: { main: '#f59e0b' },
+            success: { main: '#10b981' },
+            text: {
+                primary: isDark ? '#f1f5f9' : '#0f172a',
+                secondary: isDark ? '#94a3b8' : '#475569',
+            },
+            divider: isDark ? 'rgba(148,163,184,0.12)' : 'rgba(15,23,42,0.08)',
+        },
+        typography: {
+            fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+            h4: { fontWeight: 700, letterSpacing: '-0.02em' },
+            h5: { fontWeight: 600 },
+            h6: { fontWeight: 600 },
+            subtitle1: { fontWeight: 500 },
+        },
+        shape: { borderRadius: 12 },
+        components: {
+            MuiCard: {
+                styleOverrides: {
+                    root: ({ theme }) => ({
+                        backgroundImage: 'none',
+                        border: `1px solid ${theme.palette.divider}`,
+                    }),
+                },
+            },
+            MuiPaper: {
+                styleOverrides: {
+                    root: { backgroundImage: 'none' },
+                },
+            },
+            MuiTab: {
+                styleOverrides: {
+                    root: { textTransform: 'none' as const, fontWeight: 500, fontSize: '0.875rem' },
+                },
+            },
+            MuiChip: {
+                styleOverrides: {
+                    root: { fontWeight: 600 },
+                },
+            },
+        },
+    });
+}
 
-/** Dose group color palette, consistent across all charts. */
+/** Default export kept for backward-compat (dark theme). */
+export default createAppTheme('dark');
+
+/** Dose-group color palette — identical across modes. */
 export const GROUP_COLORS = ['#94a3b8', '#34d399', '#fbbf24', '#ef4444'];
 export const GROUP_COLOR_MAP: Record<string, string> = {
     'Vehicle Control': '#94a3b8',

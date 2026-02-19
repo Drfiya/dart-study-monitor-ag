@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import {
     Box, Grid, Paper, CircularProgress, Typography,
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-    ToggleButton, ToggleButtonGroup, Stack,
+    alpha, useTheme,
 } from '@mui/material';
 import LitterOutcomeBoxplot from '../charts/LitterOutcomeBoxplot';
 import type { LitterData } from '../../api';
@@ -16,6 +16,7 @@ interface Props {
 }
 
 export default function LitterTab({ studyId }: Props) {
+    const theme = useTheme();
     const [data, setData] = useState<LitterData | null>(null);
 
     useEffect(() => {
@@ -27,9 +28,9 @@ export default function LitterTab({ studyId }: Props) {
     return (
         <Box>
             {/* Info banner */}
-            <Paper sx={{ p: 2, mb: 3, bgcolor: 'rgba(96,165,250,0.05)', border: '1px solid rgba(96,165,250,0.1)' }}>
-                <Typography variant="body2" sx={{ color: '#94a3b8' }}>
-                    <strong style={{ color: '#60a5fa' }}>Litter-Based Evaluation:</strong> In DART studies, the litter is
+            <Paper sx={{ p: 2, mb: 3, bgcolor: alpha(theme.palette.primary.main, 0.05), border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}` }}>
+                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                    <strong style={{ color: theme.palette.primary.main }}>Litter-Based Evaluation:</strong> In DART studies, the litter is
                     the primary unit for statistical analysis. Per-litter metrics shown here include implantation sites,
                     resorptions, and fetal counts. Pre- and post-implantation loss are calculated as percentages.
                 </Typography>
@@ -76,24 +77,24 @@ export default function LitterTab({ studyId }: Props) {
 
             {/* Summary table */}
             <Paper sx={{ p: 2, mt: 3 }}>
-                <Typography variant="subtitle2" sx={{ mb: 1.5, color: '#e2e8f0' }}>
+                <Typography variant="subtitle2" sx={{ mb: 1.5, color: theme.palette.text.primary }}>
                     Litter Summary Table
                 </Typography>
-                <TableContainer sx={{ bgcolor: '#111827' }}>
+                <TableContainer>
                     <Table size="small">
                         <TableHead>
                             <TableRow>
                                 {['Group', 'Dose', 'Dams', 'Pregnant', 'Litters', 'Mean Litter Size',
                                     'Mean Implant.', 'Mean Resorp.', 'Mean Live', 'Mean Fetal Wt (g)'].map(h => (
-                                        <TableCell key={h} sx={{ fontWeight: 600, color: '#94a3b8', fontSize: '0.75rem' }}>{h}</TableCell>
+                                        <TableCell key={h} sx={{ fontWeight: 600, color: theme.palette.text.secondary, fontSize: '0.75rem' }}>{h}</TableCell>
                                     ))}
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {data.litterSummaryTable.map(row => (
                                 <TableRow key={row.groupName} hover>
-                                    <TableCell sx={{ color: '#e2e8f0', fontSize: '0.8rem' }}>{row.groupName}</TableCell>
-                                    <TableCell sx={{ color: '#e2e8f0', fontSize: '0.8rem' }}>{row.doseLevel}</TableCell>
+                                    <TableCell sx={{ color: theme.palette.text.primary, fontSize: '0.8rem' }}>{row.groupName}</TableCell>
+                                    <TableCell sx={{ color: theme.palette.text.primary, fontSize: '0.8rem' }}>{row.doseLevel}</TableCell>
                                     <TableCell align="center">{row.dams}</TableCell>
                                     <TableCell align="center">{row.pregnantDams}</TableCell>
                                     <TableCell align="center">{row.littersEvaluated}</TableCell>

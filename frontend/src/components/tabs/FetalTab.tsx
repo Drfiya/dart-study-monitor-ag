@@ -7,10 +7,10 @@ import {
     ToggleButton, ToggleButtonGroup, Stack,
     FormControl, InputLabel, Select, MenuItem,
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-    alpha, Chip,
+    alpha, Chip, useTheme,
 } from '@mui/material';
 import DoseResponseBar from '../charts/DoseResponseBar';
-import type { FetalFindingsData, FetalFindingRow } from '../../api';
+import type { FetalFindingsData } from '../../api';
 import { fetchFetalData } from '../../api';
 import { RISK_COLORS } from '../../theme';
 
@@ -27,6 +27,7 @@ function intensityColor(value: number): string {
 }
 
 export default function FetalTab({ studyId }: Props) {
+    const theme = useTheme();
     const [data, setData] = useState<FetalFindingsData | null>(null);
     const [viewMode, setViewMode] = useState<'litter' | 'fetus'>('litter');
     const [categoryFilter, setCategoryFilter] = useState('all');
@@ -103,18 +104,18 @@ export default function FetalTab({ studyId }: Props) {
                 {/* Incidence table */}
                 <Grid size={{ xs: 12, md: 8 }}>
                     <Paper sx={{ p: 2 }}>
-                        <Typography variant="subtitle2" sx={{ mb: 1, color: '#e2e8f0' }}>
+                        <Typography variant="subtitle2" sx={{ mb: 1, color: theme.palette.text.primary }}>
                             Fetal Findings Incidence Table ({viewMode === 'litter' ? '% Litters' : '% Fetuses'})
                         </Typography>
                         <TableContainer sx={{ maxHeight: 500 }}>
                             <Table size="small" stickyHeader>
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell sx={{ bgcolor: '#1e293b', fontWeight: 600, color: '#94a3b8', minWidth: 200 }}>Finding</TableCell>
-                                        <TableCell sx={{ bgcolor: '#1e293b', fontWeight: 600, color: '#94a3b8' }}>Type</TableCell>
-                                        <TableCell sx={{ bgcolor: '#1e293b', fontWeight: 600, color: '#94a3b8' }}>Class</TableCell>
+                                        <TableCell sx={{ bgcolor: theme.palette.background.paper, fontWeight: 600, color: theme.palette.text.secondary, minWidth: 200 }}>Finding</TableCell>
+                                        <TableCell sx={{ bgcolor: theme.palette.background.paper, fontWeight: 600, color: theme.palette.text.secondary }}>Type</TableCell>
+                                        <TableCell sx={{ bgcolor: theme.palette.background.paper, fontWeight: 600, color: theme.palette.text.secondary }}>Class</TableCell>
                                         {filteredFindings[0]?.groups.map(g => (
-                                            <TableCell key={g.groupId} align="center" sx={{ bgcolor: '#1e293b', fontWeight: 600, color: '#94a3b8', minWidth: 90 }}>
+                                            <TableCell key={g.groupId} align="center" sx={{ bgcolor: theme.palette.background.paper, fontWeight: 600, color: theme.palette.text.secondary, minWidth: 90 }}>
                                                 {g.groupName}
                                             </TableCell>
                                         ))}
@@ -128,10 +129,10 @@ export default function FetalTab({ studyId }: Props) {
                                             onClick={() => setSelectedFinding(row.findingTerm)}
                                             sx={{
                                                 cursor: 'pointer',
-                                                bgcolor: selectedFinding === row.findingTerm ? 'rgba(96,165,250,0.08)' : undefined,
+                                                bgcolor: selectedFinding === row.findingTerm ? alpha(theme.palette.primary.main, 0.08) : undefined,
                                             }}
                                         >
-                                            <TableCell sx={{ color: '#e2e8f0', fontSize: '0.8rem' }}>{row.findingTerm}</TableCell>
+                                            <TableCell sx={{ color: theme.palette.text.primary, fontSize: '0.8rem' }}>{row.findingTerm}</TableCell>
                                             <TableCell>
                                                 <Chip label={row.examType} size="small" variant="outlined" sx={{ fontSize: '0.7rem' }} />
                                             </TableCell>
@@ -159,13 +160,13 @@ export default function FetalTab({ studyId }: Props) {
                                                         align="center"
                                                         sx={{
                                                             bgcolor: intensityColor(pct),
-                                                            color: '#e2e8f0',
+                                                            color: theme.palette.text.primary,
                                                             fontSize: '0.8rem',
                                                             fontWeight: pct > 0 ? 600 : 400,
                                                         }}
                                                     >
                                                         {pct > 0 ? `${pct.toFixed(1)}%` : '—'}
-                                                        <Typography variant="caption" display="block" sx={{ color: '#64748b', fontSize: '0.65rem' }}>
+                                                        <Typography variant="caption" display="block" sx={{ color: theme.palette.text.disabled, fontSize: '0.65rem' }}>
                                                             ({count})
                                                         </Typography>
                                                     </TableCell>

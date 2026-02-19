@@ -2,7 +2,7 @@
  * Maternal tab — body weight, food consumption, clinical signs heatmap.
  */
 import { useState, useEffect } from 'react';
-import { Box, Grid, Paper, CircularProgress, Typography, Chip, Stack } from '@mui/material';
+import { Box, Grid, Paper, CircularProgress, Typography, alpha, useTheme } from '@mui/material';
 import LineChartByGroup from '../charts/LineChartByGroup';
 import IncidenceHeatmap from '../charts/IncidenceHeatmap';
 import type { MaternalData } from '../../api';
@@ -13,6 +13,7 @@ interface Props {
 }
 
 export default function MaternalTab({ studyId }: Props) {
+    const theme = useTheme();
     const [data, setData] = useState<MaternalData | null>(null);
 
     useEffect(() => {
@@ -24,9 +25,9 @@ export default function MaternalTab({ studyId }: Props) {
     return (
         <Box>
             {/* Interpretation guidance */}
-            <Paper sx={{ p: 2, mb: 3, bgcolor: 'rgba(96,165,250,0.05)', border: '1px solid rgba(96,165,250,0.1)' }}>
-                <Typography variant="body2" sx={{ color: '#94a3b8' }}>
-                    <strong style={{ color: '#60a5fa' }}>Maternal Toxicity Assessment:</strong> Decreased body weight gain
+            <Paper sx={{ p: 2, mb: 3, bgcolor: alpha(theme.palette.primary.main, 0.05), border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}` }}>
+                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                    <strong style={{ color: theme.palette.primary.main }}>Maternal Toxicity Assessment:</strong> Decreased body weight gain
                     and reduced food consumption are key indicators of maternal toxicity. Clinical signs provide supporting
                     evidence. Assess maternal effects independently from developmental findings.
                 </Typography>

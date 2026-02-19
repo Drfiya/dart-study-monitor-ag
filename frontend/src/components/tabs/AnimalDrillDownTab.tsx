@@ -5,20 +5,22 @@ import { useState, useEffect } from 'react';
 import {
     Box, Grid, Paper, CircularProgress, Typography,
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-    Chip, Stack, Collapse, IconButton, alpha,
+    Chip, Stack, Collapse, IconButton, alpha, useTheme,
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import LineChartByGroup from '../charts/LineChartByGroup';
 import type { AnimalDetail, GroupTimeSeries } from '../../api';
 import { fetchAnimals } from '../../api';
-import { RISK_COLORS } from '../../theme';
+
 
 interface Props {
     studyId: string;
 }
 
 function AnimalRow({ animal }: { animal: AnimalDetail }) {
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
     const [open, setOpen] = useState(false);
 
     const statusColor = animal.pregnancyStatus === 'pregnant' ? '#10b981'
@@ -36,11 +38,11 @@ function AnimalRow({ animal }: { animal: AnimalDetail }) {
         <>
             <TableRow hover onClick={() => setOpen(!open)} sx={{ cursor: 'pointer' }}>
                 <TableCell>
-                    <IconButton size="small" sx={{ color: '#94a3b8' }}>
+                    <IconButton size="small" sx={{ color: theme.palette.text.secondary }}>
                         {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                     </IconButton>
                 </TableCell>
-                <TableCell sx={{ color: '#e2e8f0', fontWeight: 500 }}>{animal.animalId}</TableCell>
+                <TableCell sx={{ color: theme.palette.text.primary, fontWeight: 500 }}>{animal.animalId}</TableCell>
                 <TableCell>{animal.groupName}</TableCell>
                 <TableCell>
                     <Chip
@@ -70,7 +72,7 @@ function AnimalRow({ animal }: { animal: AnimalDetail }) {
             <TableRow>
                 <TableCell colSpan={8} sx={{ p: 0 }}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
-                        <Box sx={{ p: 3, bgcolor: 'rgba(15,23,42,0.5)' }}>
+                        <Box sx={{ p: 3, bgcolor: isDark ? 'rgba(15,23,42,0.5)' : alpha(theme.palette.primary.main, 0.02) }}>
                             <Grid container spacing={3}>
                                 {/* Individual body weight chart */}
                                 <Grid size={{ xs: 12, md: 6 }}>
@@ -89,7 +91,7 @@ function AnimalRow({ animal }: { animal: AnimalDetail }) {
                                 <Grid size={{ xs: 12, md: 6 }}>
                                     {animal.litter ? (
                                         <Paper sx={{ p: 2 }}>
-                                            <Typography variant="subtitle2" sx={{ mb: 1, color: '#e2e8f0' }}>Litter Outcomes</Typography>
+                                            <Typography variant="subtitle2" sx={{ mb: 1, color: theme.palette.text.primary }}>Litter Outcomes</Typography>
                                             <Stack spacing={0.5}>
                                                 <Typography variant="body2">Implantations: {animal.litter.implantations}</Typography>
                                                 <Typography variant="body2">Corpora Lutea: {animal.litter.corporaLutea}</Typography>
@@ -111,18 +113,18 @@ function AnimalRow({ animal }: { animal: AnimalDetail }) {
                                 {animal.fetuses.length > 0 && (
                                     <Grid size={{ xs: 12 }}>
                                         <Paper sx={{ p: 2 }}>
-                                            <Typography variant="subtitle2" sx={{ mb: 1, color: '#e2e8f0' }}>
+                                            <Typography variant="subtitle2" sx={{ mb: 1, color: theme.palette.text.primary }}>
                                                 Fetal Findings ({animal.fetuses.length} fetuses)
                                             </Typography>
                                             <TableContainer sx={{ maxHeight: 200 }}>
                                                 <Table size="small">
                                                     <TableHead>
                                                         <TableRow>
-                                                            <TableCell sx={{ fontWeight: 600, color: '#94a3b8' }}>Fetus ID</TableCell>
-                                                            <TableCell sx={{ fontWeight: 600, color: '#94a3b8' }}>Sex</TableCell>
-                                                            <TableCell sx={{ fontWeight: 600, color: '#94a3b8' }}>Weight</TableCell>
-                                                            <TableCell sx={{ fontWeight: 600, color: '#94a3b8' }}>Status</TableCell>
-                                                            <TableCell sx={{ fontWeight: 600, color: '#94a3b8' }}>Findings</TableCell>
+                                                            <TableCell sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>Fetus ID</TableCell>
+                                                            <TableCell sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>Sex</TableCell>
+                                                            <TableCell sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>Weight</TableCell>
+                                                            <TableCell sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>Status</TableCell>
+                                                            <TableCell sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>Findings</TableCell>
                                                         </TableRow>
                                                     </TableHead>
                                                     <TableBody>
@@ -171,18 +173,18 @@ function AnimalRow({ animal }: { animal: AnimalDetail }) {
                                 {animal.pups.length > 0 && (
                                     <Grid size={{ xs: 12 }}>
                                         <Paper sx={{ p: 2 }}>
-                                            <Typography variant="subtitle2" sx={{ mb: 1, color: '#e2e8f0' }}>
+                                            <Typography variant="subtitle2" sx={{ mb: 1, color: theme.palette.text.primary }}>
                                                 Pups ({animal.pups.length})
                                             </Typography>
                                             <TableContainer sx={{ maxHeight: 200 }}>
                                                 <Table size="small">
                                                     <TableHead>
                                                         <TableRow>
-                                                            <TableCell sx={{ fontWeight: 600, color: '#94a3b8' }}>Pup ID</TableCell>
-                                                            <TableCell sx={{ fontWeight: 600, color: '#94a3b8' }}>Sex</TableCell>
-                                                            <TableCell sx={{ fontWeight: 600, color: '#94a3b8' }}>Status</TableCell>
-                                                            <TableCell sx={{ fontWeight: 600, color: '#94a3b8' }}>Neurobehavior</TableCell>
-                                                            <TableCell sx={{ fontWeight: 600, color: '#94a3b8' }}>Eye Opening</TableCell>
+                                                            <TableCell sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>Pup ID</TableCell>
+                                                            <TableCell sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>Sex</TableCell>
+                                                            <TableCell sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>Status</TableCell>
+                                                            <TableCell sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>Neurobehavior</TableCell>
+                                                            <TableCell sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>Eye Opening</TableCell>
                                                         </TableRow>
                                                     </TableHead>
                                                     <TableBody>
@@ -221,6 +223,7 @@ function AnimalRow({ animal }: { animal: AnimalDetail }) {
 }
 
 export default function AnimalDrillDownTab({ studyId }: Props) {
+    const theme = useTheme();
     const [animals, setAnimals] = useState<AnimalDetail[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -235,25 +238,25 @@ export default function AnimalDrillDownTab({ studyId }: Props) {
 
     return (
         <Box>
-            <Paper sx={{ p: 2, mb: 3, bgcolor: 'rgba(96,165,250,0.05)', border: '1px solid rgba(96,165,250,0.1)' }}>
-                <Typography variant="body2" sx={{ color: '#94a3b8' }}>
-                    <strong style={{ color: '#60a5fa' }}>Animal/Litter Drill-Down:</strong> Click any dam row to expand
+            <Paper sx={{ p: 2, mb: 3, bgcolor: alpha(theme.palette.primary.main, 0.05), border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}` }}>
+                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                    <strong style={{ color: theme.palette.primary.main }}>Animal/Litter Drill-Down:</strong> Click any dam row to expand
                     its individual body weight chart, litter outcomes, and fetal/pup findings.
                 </Typography>
             </Paper>
 
-            <TableContainer component={Paper} sx={{ bgcolor: '#111827' }}>
+            <TableContainer component={Paper}>
                 <Table size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ fontWeight: 600, color: '#94a3b8', width: 50 }} />
-                            <TableCell sx={{ fontWeight: 600, color: '#94a3b8' }}>Animal ID</TableCell>
-                            <TableCell sx={{ fontWeight: 600, color: '#94a3b8' }}>Group</TableCell>
-                            <TableCell sx={{ fontWeight: 600, color: '#94a3b8' }}>Pregnancy</TableCell>
-                            <TableCell align="center" sx={{ fontWeight: 600, color: '#94a3b8' }}>Live Fetuses</TableCell>
-                            <TableCell align="center" sx={{ fontWeight: 600, color: '#94a3b8' }}>Resorptions</TableCell>
-                            <TableCell sx={{ fontWeight: 600, color: '#94a3b8' }}>Clinical Signs</TableCell>
-                            <TableCell sx={{ fontWeight: 600, color: '#94a3b8' }}>Status</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: theme.palette.text.secondary, width: 50 }} />
+                            <TableCell sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>Animal ID</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>Group</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>Pregnancy</TableCell>
+                            <TableCell align="center" sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>Live Fetuses</TableCell>
+                            <TableCell align="center" sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>Resorptions</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>Clinical Signs</TableCell>
+                            <TableCell sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>Status</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

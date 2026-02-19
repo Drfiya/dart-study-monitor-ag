@@ -5,13 +5,15 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     Box, Container, Typography, Tabs, Tab, Stack, IconButton,
-    Tooltip, Paper, Chip, Button, alpha, Breadcrumbs, Link,
+    Tooltip, Paper, Chip, alpha, Breadcrumbs, Link, useTheme,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import ScienceIcon from '@mui/icons-material/Science';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import type { StudySummary } from '../api';
 import { fetchStudies, refreshData } from '../api';
+import { useThemeMode } from '../ThemeContext';
 import OverviewTab from '../components/tabs/OverviewTab';
 import MaternalTab from '../components/tabs/MaternalTab';
 import LitterTab from '../components/tabs/LitterTab';
@@ -32,8 +34,12 @@ function TabPanel({ children, value, index }: TabPanelProps) {
 export default function StudyDashboard() {
     const { studyId } = useParams<{ studyId: string }>();
     const navigate = useNavigate();
+    const theme = useTheme();
+    const { mode, toggleMode } = useThemeMode();
     const [study, setStudy] = useState<StudySummary | null>(null);
     const [tabValue, setTabValue] = useState(0);
+
+    const isDark = mode === 'dark';
 
     useEffect(() => {
         if (!studyId) return;
@@ -65,11 +71,19 @@ export default function StudyDashboard() {
         { label: 'Animal Drill-Down', key: 'drilldown' },
     ];
 
+    const headerBg = isDark
+        ? 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)'
+        : 'linear-gradient(135deg, #e0e7ff 0%, #ede9fe 50%, #e0e7ff 100%)';
+
     return (
         <Box sx={{ minHeight: '100vh', pb: 6 }}>
             {/* GLP Banner */}
-            <Box sx={{ bgcolor: 'rgba(96,165,250,0.06)', borderBottom: '1px solid rgba(96,165,250,0.1)', py: 1, px: 3 }}>
-                <Typography variant="caption" sx={{ color: '#64748b' }}>
+            <Box sx={{
+                bgcolor: alpha(theme.palette.primary.main, 0.06),
+                borderBottom: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+                py: 1, px: 3,
+            }}>
+                <Typography variant="caption" sx={{ color: theme.palette.text.disabled }}>
                     🔒 Prototype – Read-only analytics overlay. Source: Provantis-like reproductive toxicology module.
                     Official GLP records reside in the source system and in signed study reports.
                 </Typography>
@@ -78,8 +92,8 @@ export default function StudyDashboard() {
             {/* Header */}
             <Box
                 sx={{
-                    background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)',
-                    borderBottom: '1px solid rgba(148,163,184,0.08)',
+                    background: headerBg,
+                    borderBottom: `1px solid ${theme.palette.divider}`,
                     py: 3,
                 }}
             >
@@ -87,7 +101,7 @@ export default function StudyDashboard() {
                     <Stack direction="row" alignItems="center" justifyContent="space-between">
                         <Stack direction="row" alignItems="center" spacing={2}>
                             <Tooltip title="Back to overview">
-                                <IconButton onClick={() => navigate('/')} sx={{ color: '#94a3b8' }}>
+                                <IconButton onClick={() => navigate('/')} sx={{ color: theme.palette.text.secondary }}>
                                     <ArrowBackIcon />
                                 </IconButton>
                             </Tooltip>
@@ -97,16 +111,16 @@ export default function StudyDashboard() {
                                         component="button"
                                         variant="caption"
                                         underline="hover"
-                                        sx={{ color: '#64748b', cursor: 'pointer' }}
+                                        sx={{ color: theme.palette.text.disabled, cursor: 'pointer' }}
                                         onClick={() => navigate('/')}
                                     >
                                         Studies
                                     </Link>
-                                    <Typography variant="caption" sx={{ color: '#94a3b8' }}>
+                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
                                         {studyId}
                                     </Typography>
                                 </Breadcrumbs>
-                                <Typography variant="h5" sx={{ color: '#f1f5f9' }}>
+                                <Typography variant="h5" sx={{ color: theme.palette.text.primary }}>
                                     {study?.studyName ?? studyId}
                                 </Typography>
                                 {study && (
@@ -116,7 +130,7 @@ export default function StudyDashboard() {
                                         <Chip label={study.strain} size="small" variant="outlined" />
                                         <Chip label={study.route} size="small" variant="outlined" />
                                         {study.glpFlag && (
-                                            <Chip label="GLP" size="small" sx={{ bgcolor: alpha('#60a5fa', 0.1), color: '#60a5fa' }} />
+                                            <Chip label="GLP" size="small" sx={{ bgcolor: alpha(theme.palette.primary.main, 0.1), color: theme.palette.primary.main }} />
                                         )}
                                     </Stack>
                                 )}
@@ -125,16 +139,21 @@ export default function StudyDashboard() {
 
                         <Stack direction="row" spacing={2} alignItems="center">
                             {/* Provenance metadata */}
-                            <Paper sx={{ px: 2, py: 1, bgcolor: 'rgba(15,23,42,0.5)' }}>
-                                <Typography variant="caption" display="block" sx={{ color: '#64748b' }}>
+                            <Paper sx={{ px: 2, py: 1, bgcolor: alpha(theme.palette.background.default, 0.5) }}>
+                                <Typography variant="caption" display="block" sx={{ color: theme.palette.text.disabled }}>
                                     Source System ID: {studyId}
                                 </Typography>
-                                <Typography variant="caption" display="block" sx={{ color: '#64748b' }}>
+                                <Typography variant="caption" display="block" sx={{ color: theme.palette.text.disabled }}>
                                     Last refresh: {study?.lastRefresh ? new Date(study.lastRefresh).toLocaleString() : 'N/A'}
                                 </Typography>
                             </Paper>
+                            <Tooltip title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
+                                <IconButton onClick={toggleMode} sx={{ color: theme.palette.text.secondary }}>
+                                    {isDark ? <LightModeIcon /> : <DarkModeIcon />}
+                                </IconButton>
+                            </Tooltip>
                             <Tooltip title="Refresh data from source system">
-                                <IconButton onClick={handleRefresh} sx={{ color: '#60a5fa' }}>
+                                <IconButton onClick={handleRefresh} sx={{ color: theme.palette.primary.main }}>
                                     <RefreshIcon />
                                 </IconButton>
                             </Tooltip>
@@ -152,7 +171,7 @@ export default function StudyDashboard() {
                         variant="scrollable"
                         scrollButtons="auto"
                     >
-                        {tabs.map((tab, i) => (
+                        {tabs.map((tab) => (
                             <Tab key={tab.key} label={tab.label} />
                         ))}
                     </Tabs>

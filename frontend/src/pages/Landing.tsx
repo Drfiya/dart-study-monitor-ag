@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
     Box, Container, Typography, Card, CardContent, CardActionArea,
     Chip, Grid, TextField, MenuItem, Select, FormControl, InputLabel,
-    Button, Stack, IconButton, Tooltip, alpha,
+    Button, Stack, IconButton, Tooltip, alpha, useTheme,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ScienceIcon from '@mui/icons-material/Science';
@@ -12,9 +12,12 @@ import SearchIcon from '@mui/icons-material/Search';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import type { StudySummary } from '../api';
 import { fetchStudies, refreshData } from '../api';
 import { RISK_COLORS } from '../theme';
+import { useThemeMode } from '../ThemeContext';
 
 const studyTypeLabels: Record<string, string> = {
     EFD: 'Embryo-Fetal Development',
@@ -49,12 +52,16 @@ function RiskBadge({ severity }: { severity: 'red' | 'yellow' | 'green' }) {
 
 export default function Landing() {
     const navigate = useNavigate();
+    const theme = useTheme();
+    const { mode, toggleMode } = useThemeMode();
     const [studies, setStudies] = useState<StudySummary[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [speciesFilter, setSpeciesFilter] = useState('all');
     const [typeFilter, setTypeFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
+
+    const isDark = mode === 'dark';
 
     useEffect(() => {
         fetchStudies().then(data => {
@@ -80,13 +87,18 @@ export default function Landing() {
         return true;
     });
 
+    /** Header gradient adapts to mode. */
+    const headerBg = isDark
+        ? 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)'
+        : 'linear-gradient(135deg, #e0e7ff 0%, #ede9fe 50%, #e0e7ff 100%)';
+
     return (
         <Box sx={{ minHeight: '100vh', pb: 6 }}>
             {/* Header */}
             <Box
                 sx={{
-                    background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)',
-                    borderBottom: '1px solid rgba(148,163,184,0.08)',
+                    background: headerBg,
+                    borderBottom: `1px solid ${theme.palette.divider}`,
                     py: 4,
                     mb: 4,
                 }}
@@ -94,29 +106,34 @@ export default function Landing() {
                 <Container maxWidth="xl">
                     <Stack direction="row" alignItems="center" justifyContent="space-between">
                         <Stack direction="row" alignItems="center" spacing={2}>
-                            <ScienceIcon sx={{ fontSize: 40, color: '#60a5fa' }} />
+                            <ScienceIcon sx={{ fontSize: 40, color: theme.palette.primary.main }} />
                             <Box>
-                                <Typography variant="h4" sx={{ color: '#f1f5f9' }}>
+                                <Typography variant="h4" sx={{ color: theme.palette.text.primary }}>
                                     DART Study Monitor
                                 </Typography>
-                                <Typography variant="body2" sx={{ color: '#94a3b8', mt: 0.5 }}>
-                                    Developmental & Reproductive Toxicology Analytics
+                                <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mt: 0.5 }}>
+                                    Developmental &amp; Reproductive Toxicology Analytics
                                 </Typography>
                             </Box>
                         </Stack>
                         <Stack direction="row" spacing={1}>
+                            <Tooltip title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
+                                <IconButton onClick={toggleMode} sx={{ color: theme.palette.text.secondary }}>
+                                    {isDark ? <LightModeIcon /> : <DarkModeIcon />}
+                                </IconButton>
+                            </Tooltip>
                             <Tooltip title="Cross-Study Analytics">
                                 <Button
                                     variant="outlined"
                                     startIcon={<CompareArrowsIcon />}
                                     onClick={() => navigate('/cross-study')}
-                                    sx={{ borderColor: 'rgba(148,163,184,0.2)', color: '#94a3b8' }}
+                                    sx={{ borderColor: theme.palette.divider, color: theme.palette.text.secondary }}
                                 >
                                     Cross-Study
                                 </Button>
                             </Tooltip>
                             <Tooltip title="Refresh data from source system">
-                                <IconButton onClick={handleRefresh} sx={{ color: '#60a5fa' }}>
+                                <IconButton onClick={handleRefresh} sx={{ color: theme.palette.primary.main }}>
                                     <RefreshIcon />
                                 </IconButton>
                             </Tooltip>
@@ -133,7 +150,7 @@ export default function Landing() {
                         placeholder="Search by Study ID or Name..."
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        InputProps={{ startAdornment: <SearchIcon sx={{ mr: 1, color: '#94a3b8' }} /> }}
+                        InputProps={{ startAdornment: <SearchIcon sx={{ mr: 1, color: theme.palette.text.secondary }} /> }}
                         sx={{ minWidth: 280 }}
                     />
                     <FormControl size="small" sx={{ minWidth: 140 }}>
@@ -172,9 +189,11 @@ export default function Landing() {
                                     height: '100%',
                                     transition: 'all 0.2s ease',
                                     '&:hover': {
-                                        borderColor: 'rgba(96, 165, 250, 0.3)',
+                                        borderColor: alpha(theme.palette.primary.main, 0.3),
                                         transform: 'translateY(-2px)',
-                                        boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                                        boxShadow: isDark
+                                            ? '0 8px 32px rgba(0,0,0,0.3)'
+                                            : '0 8px 32px rgba(0,0,0,0.08)',
                                     },
                                 }}
                             >
@@ -186,7 +205,7 @@ export default function Landing() {
                                         {/* Header row */}
                                         <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 2 }}>
                                             <Box>
-                                                <Typography variant="overline" sx={{ color: '#94a3b8', letterSpacing: 1 }}>
+                                                <Typography variant="overline" sx={{ color: theme.palette.text.secondary, letterSpacing: 1 }}>
                                                     {study.studyId}
                                                 </Typography>
                                                 <Typography variant="h6" sx={{ lineHeight: 1.3, mt: 0.5 }}>
@@ -207,7 +226,7 @@ export default function Landing() {
                                                 variant="outlined"
                                             />
                                             {study.glpFlag && (
-                                                <Chip label="GLP" size="small" sx={{ bgcolor: 'rgba(96,165,250,0.1)', color: '#60a5fa' }} />
+                                                <Chip label="GLP" size="small" sx={{ bgcolor: alpha(theme.palette.primary.main, 0.1), color: theme.palette.primary.main }} />
                                             )}
                                         </Stack>
 
@@ -219,34 +238,34 @@ export default function Landing() {
                                                 gap: 1.5,
                                                 p: 2,
                                                 borderRadius: 2,
-                                                bgcolor: 'rgba(15, 23, 42, 0.5)',
-                                                border: '1px solid rgba(148,163,184,0.06)',
+                                                bgcolor: isDark ? 'rgba(15,23,42,0.5)' : alpha(theme.palette.primary.main, 0.04),
+                                                border: `1px solid ${theme.palette.divider}`,
                                             }}
                                         >
                                             <Box sx={{ textAlign: 'center' }}>
-                                                <Typography variant="h6" sx={{ color: '#60a5fa' }}>{study.design.numberOfGroups}</Typography>
-                                                <Typography variant="caption" sx={{ color: '#94a3b8' }}>Groups</Typography>
+                                                <Typography variant="h6" sx={{ color: theme.palette.primary.main }}>{study.design.numberOfGroups}</Typography>
+                                                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Groups</Typography>
                                             </Box>
                                             <Box sx={{ textAlign: 'center' }}>
-                                                <Typography variant="h6" sx={{ color: '#60a5fa' }}>{study.totalDams}</Typography>
-                                                <Typography variant="caption" sx={{ color: '#94a3b8' }}>Dams</Typography>
+                                                <Typography variant="h6" sx={{ color: theme.palette.primary.main }}>{study.totalDams}</Typography>
+                                                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Dams</Typography>
                                             </Box>
                                             <Box sx={{ textAlign: 'center' }}>
-                                                <Typography variant="h6" sx={{ color: '#60a5fa' }}>{study.percentPregnant}%</Typography>
-                                                <Typography variant="caption" sx={{ color: '#94a3b8' }}>Pregnant</Typography>
+                                                <Typography variant="h6" sx={{ color: theme.palette.primary.main }}>{study.percentPregnant}%</Typography>
+                                                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Pregnant</Typography>
                                             </Box>
                                             <Box sx={{ textAlign: 'center' }}>
                                                 <Typography variant="h6" sx={{ color: RISK_COLORS[study.riskBadge] }}>{study.activeAlerts}</Typography>
-                                                <Typography variant="caption" sx={{ color: '#94a3b8' }}>Alerts</Typography>
+                                                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Alerts</Typography>
                                             </Box>
                                         </Box>
 
                                         {/* Design info */}
                                         <Stack direction="row" justifyContent="space-between" sx={{ mt: 2 }}>
-                                            <Typography variant="caption" sx={{ color: '#64748b' }}>
+                                            <Typography variant="caption" sx={{ color: theme.palette.text.disabled }}>
                                                 {study.design.ichType} • {study.design.dosingWindow}
                                             </Typography>
-                                            <Typography variant="caption" sx={{ color: '#64748b' }}>
+                                            <Typography variant="caption" sx={{ color: theme.palette.text.disabled }}>
                                                 {study.startDate}
                                             </Typography>
                                         </Stack>
@@ -258,8 +277,8 @@ export default function Landing() {
                 </Grid>
 
                 {/* Footer provenance */}
-                <Box sx={{ mt: 6, pt: 3, borderTop: '1px solid rgba(148,163,184,0.08)', textAlign: 'center' }}>
-                    <Typography variant="caption" sx={{ color: '#475569' }}>
+                <Box sx={{ mt: 6, pt: 3, borderTop: `1px solid ${theme.palette.divider}`, textAlign: 'center' }}>
+                    <Typography variant="caption" sx={{ color: theme.palette.text.disabled }}>
                         Prototype – Read-only analytics overlay. Source system: Provantis-like reproductive toxicology module.
                         Data refreshed: {studies[0]?.lastRefresh ? new Date(studies[0].lastRefresh).toLocaleString() : 'N/A'}
                     </Typography>

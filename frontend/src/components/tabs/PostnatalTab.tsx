@@ -6,10 +6,10 @@ import {
     Box, Grid, Paper, CircularProgress, Typography,
     ToggleButton, ToggleButtonGroup, Stack,
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+    alpha, useTheme,
 } from '@mui/material';
 import LineChartByGroup from '../charts/LineChartByGroup';
 import LitterOutcomeBoxplot from '../charts/LitterOutcomeBoxplot';
-import DoseResponseBar from '../charts/DoseResponseBar';
 import type { PostnatalData } from '../../api';
 import { fetchPostnatalData } from '../../api';
 
@@ -18,6 +18,7 @@ interface Props {
 }
 
 export default function PostnatalTab({ studyId }: Props) {
+    const theme = useTheme();
     const [data, setData] = useState<PostnatalData | null>(null);
     const [sexView, setSexView] = useState<'combined' | 'male' | 'female'>('combined');
 
@@ -44,9 +45,9 @@ export default function PostnatalTab({ studyId }: Props) {
     return (
         <Box>
             {/* Info banner */}
-            <Paper sx={{ p: 2, mb: 3, bgcolor: 'rgba(96,165,250,0.05)', border: '1px solid rgba(96,165,250,0.1)' }}>
-                <Typography variant="body2" sx={{ color: '#94a3b8' }}>
-                    <strong style={{ color: '#60a5fa' }}>PPND Assessment:</strong> Pre- and postnatal development
+            <Paper sx={{ p: 2, mb: 3, bgcolor: alpha(theme.palette.primary.main, 0.05), border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}` }}>
+                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                    <strong style={{ color: theme.palette.primary.main }}>PPND Assessment:</strong> Pre- and postnatal development
                     endpoints include pup viability, weight gain, and developmental milestones (pinna detachment, eye
                     opening). Delays or decreases in a dose-related manner may indicate developmental toxicity.
                 </Typography>
@@ -84,22 +85,22 @@ export default function PostnatalTab({ studyId }: Props) {
                 {data.milestoneIncidence.map(milestone => (
                     <Grid size={{ xs: 12, md: 6 }} key={milestone.milestone}>
                         <Paper sx={{ p: 2 }}>
-                            <Typography variant="subtitle2" sx={{ mb: 1, color: '#e2e8f0' }}>
+                            <Typography variant="subtitle2" sx={{ mb: 1, color: theme.palette.text.primary }}>
                                 {milestone.milestone.charAt(0).toUpperCase() + milestone.milestone.slice(1)}
                             </Typography>
                             <TableContainer>
                                 <Table size="small">
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell sx={{ fontWeight: 600, color: '#94a3b8' }}>Group</TableCell>
-                                            <TableCell align="center" sx={{ fontWeight: 600, color: '#94a3b8' }}>Mean Day</TableCell>
-                                            <TableCell align="center" sx={{ fontWeight: 600, color: '#94a3b8' }}>% Delayed</TableCell>
+                                            <TableCell sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>Group</TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>Mean Day</TableCell>
+                                            <TableCell align="center" sx={{ fontWeight: 600, color: theme.palette.text.secondary }}>% Delayed</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
                                         {milestone.groups.map(g => (
                                             <TableRow key={g.groupId} hover>
-                                                <TableCell sx={{ color: '#e2e8f0' }}>{g.groupName}</TableCell>
+                                                <TableCell sx={{ color: theme.palette.text.primary }}>{g.groupName}</TableCell>
                                                 <TableCell align="center">{g.meanDay.toFixed(1)}</TableCell>
                                                 <TableCell
                                                     align="center"

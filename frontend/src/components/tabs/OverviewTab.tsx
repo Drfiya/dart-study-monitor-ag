@@ -4,11 +4,8 @@
 import { useState, useEffect } from 'react';
 import {
     Box, Grid, Paper, Typography, Chip, Stack, Alert as MuiAlert,
-    CircularProgress, alpha, Divider,
+    CircularProgress, alpha, useTheme,
 } from '@mui/material';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import ErrorIcon from '@mui/icons-material/Error';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import LineChartByGroup from '../charts/LineChartByGroup';
 import StackedBarChart from '../charts/StackedBarChart';
 import type { OverviewData } from '../../api';
@@ -20,9 +17,10 @@ interface Props {
 }
 
 function StatusTile({ title, status, color }: { title: string; status: string; color: string }) {
+    const theme = useTheme();
     return (
         <Paper sx={{ p: 2.5, bgcolor: alpha(color, 0.08), border: `1px solid ${alpha(color, 0.2)}` }}>
-            <Typography variant="caption" sx={{ color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1 }}>
+            <Typography variant="caption" sx={{ color: theme.palette.text.secondary, textTransform: 'uppercase', letterSpacing: 1 }}>
                 {title}
             </Typography>
             <Typography variant="body1" sx={{ mt: 0.5, fontWeight: 600, color }}>
@@ -33,6 +31,7 @@ function StatusTile({ title, status, color }: { title: string; status: string; c
 }
 
 export default function OverviewTab({ studyId }: Props) {
+    const theme = useTheme();
     const [data, setData] = useState<OverviewData | null>(null);
 
     useEffect(() => {
@@ -61,21 +60,21 @@ export default function OverviewTab({ studyId }: Props) {
                 </Grid>
                 <Grid size={{ xs: 12, md: 3 }}>
                     <Paper sx={{ p: 2.5 }}>
-                        <Typography variant="caption" sx={{ color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1 }}>Design</Typography>
+                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary, textTransform: 'uppercase', letterSpacing: 1 }}>Design</Typography>
                         <Typography variant="body2" sx={{ mt: 0.5 }}>
                             {data.study.design?.ichType} • {data.study.species} ({data.study.strain})
                         </Typography>
-                        <Typography variant="body2" sx={{ color: '#94a3b8' }}>
+                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                             {data.study.route} • {data.study.design?.dosingWindow}
                         </Typography>
                     </Paper>
                 </Grid>
                 <Grid size={{ xs: 12, md: 3 }}>
                     <Paper sx={{ p: 2.5 }}>
-                        <Typography variant="caption" sx={{ color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1 }}>Status</Typography>
+                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary, textTransform: 'uppercase', letterSpacing: 1 }}>Status</Typography>
                         <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
                             <Chip label={data.study.status} size="small" color={data.study.status === 'ongoing' ? 'primary' : 'default'} />
-                            {data.study.glpFlag && <Chip label="GLP" size="small" sx={{ color: '#60a5fa' }} />}
+                            {data.study.glpFlag && <Chip label="GLP" size="small" sx={{ color: theme.palette.primary.main }} />}
                         </Stack>
                     </Paper>
                 </Grid>
@@ -83,8 +82,8 @@ export default function OverviewTab({ studyId }: Props) {
 
             {/* Alerts panel */}
             {data.alerts.length > 0 && (
-                <Paper sx={{ p: 2, mb: 3, border: '1px solid rgba(239,68,68,0.15)' }}>
-                    <Typography variant="subtitle2" sx={{ mb: 1.5, color: '#ef4444' }}>
+                <Paper sx={{ p: 2, mb: 3, border: `1px solid ${alpha(RISK_COLORS.red, 0.15)}` }}>
+                    <Typography variant="subtitle2" sx={{ mb: 1.5, color: RISK_COLORS.red }}>
                         ⚠ Signals & Alerts ({data.alerts.length})
                     </Typography>
                     <Stack spacing={1} sx={{ maxHeight: 200, overflow: 'auto' }}>
