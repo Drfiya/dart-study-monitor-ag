@@ -52,7 +52,7 @@ export default function LitterOutcomeBoxplot({ title, data, yLabel, height = 280
                     />
                     <Tooltip
                         contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8 }}
-                        formatter={(value: number, name: string) => [value.toFixed(2), name]}
+                        formatter={(value: number | undefined, name: string | undefined) => [(value ?? 0).toFixed(2), name ?? '']}
                     />
                     <Bar dataKey="mean" name="Mean" radius={[4, 4, 0, 0]}>
                         <ErrorBar dataKey="error" width={6} strokeWidth={1.5} stroke="#94a3b8" />

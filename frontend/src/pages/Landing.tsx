@@ -55,7 +55,6 @@ export default function Landing() {
     const theme = useTheme();
     const { mode, toggleMode } = useThemeMode();
     const [studies, setStudies] = useState<StudySummary[]>([]);
-    const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [speciesFilter, setSpeciesFilter] = useState('all');
     const [typeFilter, setTypeFilter] = useState('all');
@@ -64,18 +63,13 @@ export default function Landing() {
     const isDark = mode === 'dark';
 
     useEffect(() => {
-        fetchStudies().then(data => {
-            setStudies(data);
-            setLoading(false);
-        });
+        fetchStudies().then(setStudies);
     }, []);
 
     const handleRefresh = async () => {
-        setLoading(true);
         await refreshData();
         const data = await fetchStudies();
         setStudies(data);
-        setLoading(false);
     };
 
     const filtered = studies.filter(s => {

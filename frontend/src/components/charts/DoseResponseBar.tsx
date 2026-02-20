@@ -44,7 +44,7 @@ export default function DoseResponseBar({ title, data, yLabel = '% Incidence', h
                     />
                     <Tooltip
                         contentStyle={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 8 }}
-                        formatter={(value: number) => [value.toFixed(1) + '%', 'Incidence']}
+                        formatter={(value: number | undefined) => [(value ?? 0).toFixed(1) + '%', 'Incidence']}
                     />
                     <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                         {data.map((_, i) => (
